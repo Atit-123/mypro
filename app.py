@@ -1,10 +1,12 @@
 import os
 import sqlite3
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
-
+@app.route("/")
+def serve_index():
+    return render_template("index.html")
 # --- Configuration ---
 
 # Hardcoded API key fallback - for testing only (replace with your own key or use env variable)
@@ -172,3 +174,4 @@ def uploaded_file(filename):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
