@@ -1,14 +1,11 @@
 import os
 import sqlite3
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
-@app.route("/")
-def serve_index():
-    return render_template("index.html")
-# --- Configuration ---
 
+# --- Configuration ---
 # Hardcoded API key fallback - for testing only (replace with your own key or use env variable)
 api_key = os.getenv("GOOGLE_GENAI_API_KEY", "AIzaSyCeQxTrf6cShJOdHkAuwufCow4sb3Bg8u4")
 if not api_key:
@@ -23,6 +20,7 @@ DATABASE = "geoclean.db"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # --- Initialize Flask app ---
+# The app instance must be created before any routes are defined.
 app = Flask(__name__)
 CORS(app, supports_credentials=True, methods=["GET", "POST", "DELETE"])
 
@@ -50,6 +48,12 @@ def init_db():
     conn.close()
 
 init_db()
+
+# --- Serve index.html ---
+@app.route("/")
+def serve_index():
+    # This route serves the static index.html file
+    return send_from_directory(".", "index.html")
 
 # --- Upload endpoint ---
 @app.route("/upload", methods=["POST"])
@@ -123,7 +127,8 @@ def get_posts():
         for row in rows:
             post = dict(row)
             if post.get("photo"):
-                post["photo_url"] = request.host_url.rstrip("/") + "/uploads/" + post["photo"]
+                # Use a relative URL for images
+                post["photo_url"] = "/uploads/" + post["photo"]
             else:
                 post["photo_url"] = None
             posts.append(post)
@@ -174,4 +179,3 @@ def uploaded_file(filename):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
