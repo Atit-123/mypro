@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
@@ -52,8 +52,9 @@ init_db()
 # --- Serve index.html ---
 @app.route("/")
 def serve_index():
-    # This route serves the static index.html file
-    return send_from_directory(".", "index.html")
+    # This route serves the static index.html file by using the render_template
+    # function, which looks for the file inside a folder named 'templates'.
+    return render_template("index.html")
 
 # --- Upload endpoint ---
 @app.route("/upload", methods=["POST"])
